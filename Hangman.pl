@@ -36,17 +36,21 @@ while_game(N,Elt, MysteryWord) :-
     write("----------------------------"),nl,
     write("##### Enter a Character : #####"), nl,
     read(Char),nl,
-    check_input(Elt, Char, MysteryWord, LetterInMystery, N, N1),
-    K is N1-1, 
+    correct_input(Elt, Char, MysteryWord, LetterInMystery, N, K),
+    /*K is N1-1,*/ 
     while_game(K, Elt, LetterInMystery).
 
-check_input(Elt, Char, MysteryWord, LetterInMystery, N, N1) :-
-    correct_input(Elt, Char, MysteryWord, LetterInMystery, N, N1);
-    write("wrong character"),nl.
+while_game(N,Elt, MysteryWord) :- 
+    N<=0, 
+    !.
 
-code_word(CList, MysteryWord) :- 
-    maplist(make_mystery, CList, MysteryWordInAscii),
-    name(MysteryWord, MysteryWordInAscii).
+
+correct_input(MysteryWord, Letter, Lnew, LetterInMystery, M,N) :-
+    not(check(MysteryWord, Letter)),
+    N is M -1,
+    LetterInMystery = Lnew,
+    write("Wrong Character"), nl,
+    write(LetterInMystery),nl.
 
 
 correct_input(MysteryWord, Letter, Lnew, LetterInMystery, M,N) :-
@@ -57,9 +61,14 @@ correct_input(MysteryWord, Letter, Lnew, LetterInMystery, M,N) :-
     /*write('Index is '), write(I),nl,*/
     replace(I, Lnew, X, Lnew_),
     name(LetterInMystery, Lnew_),
-    incr(M,N),
+    N = M,
+    /*incr(M,N),*/
     write(LetterInMystery),nl.
 
+
+code_word(CList, MysteryWord) :- 
+    maplist(make_mystery, CList, MysteryWordInAscii),
+    name(MysteryWord, MysteryWordInAscii).
 
 incr(X, X1) :-
     X1 is X+1.
