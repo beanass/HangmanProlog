@@ -22,30 +22,60 @@ word_to_guess :-
     getRandomWord(List, Elt),
     write(Elt), nl,
     name(Elt, CList),
-    write(CList),
+    write(CList),nl,
     code_word(CList, MysteryWord),
-    write(MysteryWord).
+    write(MysteryWord), nl,
+    write("###### Game Start ######"),nl,
+    write("----------------------------"),
+    while_game(6, Elt, MysteryWord).
 
+
+while_game(N,Elt, MysteryWord) :- 
+    N>0, 
+    format('You have ~w attempt ~n', [N]), 
+    write("----------------------------"),nl,
+    write("##### Enter a Character : #####"), nl,
+    read(Char),nl,
+    check_input(Elt, Char, MysteryWord, LetterInMystery, N, N1),
+    K is N1-1, 
+    while_game(K, Elt, LetterInMystery).
+
+check_input(Elt, Char, MysteryWord, LetterInMystery, N, N1) :-
+    correct_input(Elt, Char, MysteryWord, LetterInMystery, N, N1);
+    write("wrong character"),nl.
 
 code_word(CList, MysteryWord) :- 
     maplist(make_mystery, CList, MysteryWordInAscii),
     name(MysteryWord, MysteryWordInAscii).
 
-correct_input(MysteryWord, Letter) :-
+
+correct_input(MysteryWord, Letter, Lnew, LetterInMystery, M,N) :-
     check(MysteryWord, Letter),
     name(MysteryWord, L),
     char_code(Letter,X),
     indexOf(L,  X, I),
-    write('Index is '), write(I). 
+    /*write('Index is '), write(I),nl,*/
+    replace(I, Lnew, X, Lnew_),
+    name(LetterInMystery, Lnew_),
+    incr(M,N),
+    write(LetterInMystery),nl.
 
 
+incr(X, X1) :-
+    X1 is X+1.
 
 
-sub_string(MysteryWord, N, Len, M, Letter).
+replace(I, L, E, K) :-
+    name(L, InAscii),
+    nth0(I, InAscii, _, R),
+    nth0(I, K, E, R).
 
 
-
-
+/*
+replace([_|T], 0, X, [X|T]).
+replace([H|T], I, X, [H|R]):- I > -1, NI is I-1, replace(T, NI, X, R), !.
+replace(L, _, _, L).
+*/
 
 %Index of Element in a List
 indexOf([Element|_], Element, 0).
