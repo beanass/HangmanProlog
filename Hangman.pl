@@ -37,12 +37,22 @@ while_game(N,Elt, MysteryWord) :-
     write("##### Enter a Character : #####"), nl,
     read(Char),nl,
     correct_input(Elt, Char, MysteryWord, LetterInMystery, N, K),
-    /*K is N1-1,*/ 
-    while_game(K, Elt, LetterInMystery).
+    win(K, Elt, MysteryWord, LetterInMystery).
+
 
 while_game(N,Elt, MysteryWord) :- 
-    N<=0, 
-    !.
+    N=<0, 
+    !,
+    write("You Loose!").
+
+win(K, Elt, MysteryWord, LetterInMystery) :- 
+    /*not(member('*', MysteryWord)),*/
+    Elt = LetterInMystery,
+    !,
+    write("Congratulation").
+
+win(K, Elt, MysteryWord, LetterInMystery)  :-     /*K is N1-1,*/ 
+    while_game(K, Elt, LetterInMystery).
 
 
 correct_input(MysteryWord, Letter, Lnew, LetterInMystery, M,N) :-
@@ -58,13 +68,27 @@ correct_input(MysteryWord, Letter, Lnew, LetterInMystery, M,N) :-
     name(MysteryWord, L),
     char_code(Letter,X),
     indexOf(L,  X, I),
-    /*write('Index is '), write(I),nl,*/
+    /*write('Index is '), write(I),nl,   Lnew is *****   */
     replace(I, Lnew, X, Lnew_),
     name(LetterInMystery, Lnew_),
     N = M,
     /*incr(M,N),*/
     write(LetterInMystery),nl.
 
+indices(List, E, Is) :-
+    findall(N, nth1(N, List, E), Is).
+
+change_all_same_character(ListOfIndex)  :-
+    indexOf(),
+    replace(I, Lnew, X, Lnew_).
+
+test:-
+    read(NWord),
+    name(NWord, LWord),
+    char_code(a,A),
+    code_word(LWord, MysteryWord),
+    findall(X, (indexOf(LWord,A,X),replace(X, MysteryWord, f, LWord), name(LWord, MysteryWord)), R),
+    write(MysteryWord).
 
 code_word(CList, MysteryWord) :- 
     maplist(make_mystery, CList, MysteryWordInAscii),
@@ -73,6 +97,20 @@ code_word(CList, MysteryWord) :-
 incr(X, X1) :-
     X1 is X+1.
 
+
+replaceTest(_, _, [], []).
+replaceTest(O, R, [O|T], [R|T2]) :- replace(O, R, T, T2).
+replaceTest(O, R, [H|T], [H|T2]) :- H \= O, replace(O, R, T, T2).
+
+replace_new(Index, MysteryWord, C, New_Mystery) :-
+    char_code(C,A),
+    replace(Index, MysteryWord, A, LWord),
+    name(New_Mystery, LWord).
+
+change_all([]).
+change_all([Index|Rest],MysteryWord,C, New_Mystery) :- 
+    replace_new(Index, MysteryWord, C, New_Mystery),
+    change_all(Rest).
 
 replace(I, L, E, K) :-
     name(L, InAscii),
